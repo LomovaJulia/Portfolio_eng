@@ -2771,6 +2771,95 @@ h1 {
   gap: 0;
 }
 
+/* Portfolio invariant: every slide uses one compact metadata header on the left. */
+.case-meta,
+.process-kicker-row,
+.lidar-meta,
+.kinder-topline,
+.results-topline,
+.retouch-topline {
+  display: block;
+}
+
+.case-meta p,
+.process-kicker-row p,
+.lidar-meta p,
+.kinder-topline p,
+.results-topline p,
+.retouch-topline p {
+  margin: 0;
+  color: var(--slate-blue);
+  font-size: clamp(0.72rem, 0.7vw, 0.82rem);
+  font-weight: 700;
+  letter-spacing: 0.035em;
+  line-height: 1.35;
+  text-align: left;
+}
+
+.process-kicker-row span,
+.kinder-topline span,
+.results-topline span,
+.retouch-topline > span {
+  display: none;
+}
+
+.process-kicker-row p:last-child,
+.lidar-meta p:last-child,
+.kinder-topline p:last-child,
+.results-topline p:last-child,
+.retouch-topline p:last-child {
+  text-align: left;
+}
+
+@media (min-width: 981px) {
+  .results-layout {
+    grid-template-columns: minmax(390px, 0.88fr) minmax(620px, 1.12fr);
+    grid-template-rows: minmax(0, 1fr);
+  }
+
+  .results-story {
+    grid-column: 1;
+    grid-row: 1;
+    padding: clamp(24px, 3.5vh, 40px) 0 clamp(12px, 1.8vh, 20px);
+  }
+
+  .results-metrics {
+    grid-column: auto;
+    grid-row: auto;
+    width: 100%;
+    margin-top: clamp(20px, 2.6vh, 28px);
+  }
+
+  .results-visual {
+    grid-column: 2;
+    grid-row: 1;
+    min-height: 0;
+    overflow: visible;
+  }
+
+  .insights-phone,
+  .testimonial-video {
+    width: min(42%, 300px);
+  }
+
+  .insights-phone {
+    top: 52%;
+    right: 12%;
+    transform: translateY(-50%) rotate(4deg);
+  }
+
+  .testimonial-video {
+    top: 48%;
+    left: 14%;
+    transform: translateY(-50%) rotate(-4deg);
+  }
+
+  .testimonial-video:hover,
+  .testimonial-video:focus-within {
+    transform: translateY(-52%) rotate(-3deg) scale(1.015);
+  }
+}
+
 @page {
   size: 16in 10in;
   margin: 0;
