@@ -111,7 +111,7 @@ h1 {
 
 .hero-statement p {
   margin: 0;
-  font-size: clamp(0.98rem, 1.05vw, 1.18rem);
+  font-size: clamp(1.08rem, 1.18vw, 1.32rem);
   font-weight: 600;
   letter-spacing: -0.02em;
   line-height: 1.45;
