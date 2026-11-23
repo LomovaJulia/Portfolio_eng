@@ -810,6 +810,13 @@ h1 {
   border-radius: clamp(16px, 1.25vw, 22px);
 }
 
+@media (min-width: 981px) {
+  .process-production .production-pipeline {
+    align-self: start;
+    height: calc(100% - clamp(14px, 1.8vh, 22px));
+  }
+}
+
 .production-pipeline > h3 {
   font-size: clamp(0.94rem, 0.96vw, 1.08rem);
 }
@@ -1235,7 +1242,7 @@ h1 {
   position: relative;
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
-  grid-template-rows: minmax(0, 1fr) clamp(112px, 16vh, 142px);
+  grid-template-rows: minmax(0, 1fr) clamp(144px, 18vh, 180px);
   gap: clamp(8px, 0.8vw, 13px);
   height: 100%;
   min-height: 0;
@@ -1327,15 +1334,15 @@ h1 {
 }
 
 .kinder-play-photo img {
-  object-position: 52% 43%;
+  object-position: 50% 42%;
 }
 
 .kinder-product-photo img {
-  object-position: 52% 72%;
+  object-position: 52% 78%;
 }
 
 .kinder-collage-photo img {
-  object-position: 50% 12%;
+  object-position: 50% 46%;
 }
 
 .kinder-media-label {
@@ -2812,6 +2819,10 @@ h1 {
 }
 
 @media (min-width: 981px) {
+  .kinder-showcase {
+    grid-template-rows: minmax(0, 1fr) clamp(176px, 21vh, 204px);
+  }
+
   .results-layout {
     grid-template-columns: minmax(390px, 0.88fr) minmax(620px, 1.12fr);
     grid-template-rows: minmax(0, 1fr);
