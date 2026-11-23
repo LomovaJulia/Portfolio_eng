@@ -406,6 +406,7 @@ video {
 .hero {
   display: grid;
   grid-template-columns: minmax(0, 0.98fr) minmax(420px, 1.02fr);
+  grid-template-rows: auto minmax(0, 1fr);
   gap: clamp(14px, 1.4vw, 24px);
   width: min(100%, 1600px);
   min-height: calc(100vh - clamp(24px, 3vw, 48px));
@@ -418,9 +419,19 @@ video {
   box-shadow: 0 16px 50px rgba(17, 24, 39, 0.07);
 }
 
+.hero-header {
+  display: flex;
+  grid-column: 1 / -1;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  min-width: 0;
+  padding: 0 clamp(10px, 1.25vw, 22px);
+}
+
 .hero-copy {
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: minmax(0, 1fr) auto;
   min-width: 0;
   padding: clamp(12px, 1.2vw, 20px) clamp(10px, 1.25vw, 22px);
 }
@@ -431,6 +442,80 @@ video {
   font-size: clamp(1.15rem, 1.4vw, 1.55rem);
   font-weight: 700;
   letter-spacing: 0.035em;
+}
+
+.contact-links {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.contact-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 36px;
+  padding: 7px 16px;
+  color: #39465a;
+  border-radius: 999px;
+  text-decoration: none;
+  transition:
+    color 180ms ease,
+    background 180ms ease,
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.contact-link + .contact-link {
+  margin-left: 4px;
+}
+
+.contact-link span {
+  font-size: clamp(0.8rem, 0.78vw, 0.94rem);
+  font-weight: 600;
+  letter-spacing: -0.018em;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.contact-icon {
+  width: 19px;
+  height: 19px;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: var(--slate-blue);
+  stroke-width: 1.65;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: stroke 180ms ease;
+}
+
+.contact-icon-linkedin {
+  stroke-width: 2;
+}
+
+.contact-icon-dot {
+  fill: var(--slate-blue);
+  stroke: none;
+}
+
+.contact-link:hover,
+.contact-link:focus-visible {
+  color: var(--navy);
+  background: rgba(102, 117, 140, 0.1);
+  box-shadow: 0 8px 20px rgba(17, 24, 39, 0.06);
+  transform: translateY(-1px);
+}
+
+.contact-link:hover .contact-icon,
+.contact-link:focus-visible .contact-icon {
+  stroke: var(--navy);
+}
+
+.contact-link:focus-visible {
+  outline: 2px solid rgba(102, 117, 140, 0.55);
+  outline-offset: 2px;
 }
 
 .hero-copy-main {
@@ -2757,7 +2842,7 @@ h1 {
 
 .retouch-slide {
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto minmax(0, 1fr) auto;
   gap: clamp(18px, 2vh, 28px);
   width: min(100%, 1600px);
   min-height: calc(100vh - clamp(24px, 3vw, 48px));
@@ -2768,6 +2853,83 @@ h1 {
   border: 1px solid var(--border);
   border-radius: clamp(18px, 1.5vw, 26px);
   box-shadow: 0 16px 50px rgba(17, 24, 39, 0.07);
+}
+
+.closing-contact {
+  display: grid;
+  grid-template-columns: minmax(360px, 0.9fr) minmax(620px, 1.1fr);
+  align-items: center;
+  gap: clamp(24px, 2.4vw, 42px);
+  min-width: 0;
+  padding: clamp(14px, 1.35vw, 20px) clamp(18px, 1.8vw, 28px);
+  background: rgba(248, 246, 242, 0.72);
+  border: 1px solid rgba(216, 211, 202, 0.94);
+  border-radius: clamp(14px, 1.15vw, 20px);
+}
+
+.closing-contact-copy {
+  position: relative;
+  min-width: 0;
+  padding-right: clamp(20px, 2vw, 34px);
+}
+
+.closing-contact-copy::after {
+  position: absolute;
+  top: 4px;
+  right: 0;
+  bottom: 4px;
+  width: 1px;
+  background: rgba(102, 117, 140, 0.22);
+  content: "";
+}
+
+.closing-contact-kicker {
+  margin: 0 0 7px;
+  color: var(--slate-blue);
+  font-size: clamp(0.68rem, 0.68vw, 0.8rem);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.closing-contact h3 {
+  margin: 0;
+  color: var(--ink);
+  font-size: clamp(1.45rem, 1.75vw, 2rem);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1.12;
+}
+
+.closing-contact-copy > p:last-child {
+  margin: 6px 0 0;
+  color: var(--slate-blue);
+  font-size: clamp(0.78rem, 0.82vw, 0.96rem);
+  font-weight: 600;
+  letter-spacing: 0.015em;
+}
+
+.contact-links-closing {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.contact-links-closing .contact-link {
+  min-width: 0;
+  min-height: 46px;
+  padding-inline: 12px;
+  background: rgba(244, 241, 235, 0.76);
+  border: 1px solid rgba(102, 117, 140, 0.22);
+}
+
+.contact-links-closing .contact-link + .contact-link {
+  margin-left: 0;
+}
+
+.contact-links-closing .contact-link:hover,
+.contact-links-closing .contact-link:focus-visible {
+  background: rgba(102, 117, 140, 0.12);
+  border-color: rgba(102, 117, 140, 0.42);
 }
 
 .retouch-topline {
