@@ -815,8 +815,20 @@ h1 {
     transform: translateY(-16px);
   }
 
+  .process-production .process-info-card {
+    padding-block: 18px;
+  }
+
+  .process-production .tool-grid {
+    margin-top: 14px;
+  }
+
+  .process-production .tool-grid > div {
+    padding-block: 10px;
+  }
+
   .process-production .production-pipeline {
-    transform: translateY(-8px);
+    transform: translateY(9px);
   }
 }
 
@@ -1742,6 +1754,14 @@ h1 {
   .process-info-card {
     padding-top: 14px;
     padding-bottom: 14px;
+  }
+
+  .process-production .process-info-card {
+    padding-block: 12px;
+  }
+
+  .process-production .production-pipeline {
+    transform: translateY(2px);
   }
 }
 
