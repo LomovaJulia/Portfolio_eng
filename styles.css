@@ -811,9 +811,8 @@ h1 {
 }
 
 @media (min-width: 981px) {
-  .process-production .production-pipeline {
-    align-self: start;
-    height: calc(100% - clamp(14px, 1.8vh, 22px));
+  .process-production {
+    transform: translateY(-16px);
   }
 }
 
