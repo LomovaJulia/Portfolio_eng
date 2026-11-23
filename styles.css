@@ -814,6 +814,10 @@ h1 {
   .process-production {
     transform: translateY(-16px);
   }
+
+  .process-production .production-pipeline {
+    transform: translateY(-8px);
+  }
 }
 
 .production-pipeline > h3 {
