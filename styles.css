@@ -894,6 +894,32 @@ h1 {
   border-left: 11px solid currentColor;
 }
 
+.is-loading .phone-play span {
+  opacity: 0;
+}
+
+.is-loading .phone-play::after {
+  position: absolute;
+  width: 34%;
+  height: 34%;
+  content: "";
+  border: 2px solid rgba(23, 25, 29, 0.24);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: video-loading-spin 700ms linear infinite;
+}
+
+.play-error .phone-play {
+  color: #9f3d37;
+  opacity: 1;
+}
+
+@keyframes video-loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .phone-play:hover {
   transform: translate(-50%, -50%) scale(1.06);
 }

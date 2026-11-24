@@ -52,7 +52,23 @@ const clickVideos = [...document.querySelectorAll("[data-click-video]")];
 const getVideoCard = (video) =>
   video.closest("[data-video-card]") || video.closest(".phone");
 
-const playClickVideo = (selectedVideo) => {
+const prepareClickVideo = (video) => {
+  video.preload = "auto";
+  video.playsInline = true;
+
+  if (video.networkState === HTMLMediaElement.NETWORK_EMPTY) {
+    video.load();
+  }
+};
+
+const setVideoLoading = (video, loading) => {
+  const videoCard = getVideoCard(video);
+  const playButton = videoCard?.querySelector("[data-video-play], .phone-play");
+  videoCard?.classList.toggle("is-loading", loading);
+  playButton?.setAttribute("aria-busy", String(loading));
+};
+
+const playClickVideo = async (selectedVideo) => {
   clickVideos.forEach((video) => {
     if (video !== selectedVideo) {
       video.pause();
@@ -62,6 +78,7 @@ const playClickVideo = (selectedVideo) => {
 
   const selectedCard = getVideoCard(selectedVideo);
   selectedCard?.classList.remove("show-end-card");
+  selectedCard?.classList.remove("play-error");
 
   if (
     Number.isFinite(selectedVideo.duration) &&
@@ -70,8 +87,28 @@ const playClickVideo = (selectedVideo) => {
     selectedVideo.currentTime = 0;
   }
 
+  prepareClickVideo(selectedVideo);
+  setVideoLoading(
+    selectedVideo,
+    selectedVideo.readyState < HTMLMediaElement.HAVE_FUTURE_DATA,
+  );
   selectedVideo.muted = false;
-  selectedVideo.play().catch(() => {});
+
+  try {
+    await selectedVideo.play();
+  } catch (error) {
+    // Some mobile browsers still reject audible playback after a delayed
+    // media request. Fall back to muted playback instead of leaving a dead UI.
+    selectedVideo.muted = true;
+
+    try {
+      await selectedVideo.play();
+    } catch (fallbackError) {
+      setVideoLoading(selectedVideo, false);
+      selectedCard?.classList.add("play-error");
+      console.warn("Video playback failed", error, fallbackError);
+    }
+  }
 };
 
 clickVideos.forEach((video) => {
@@ -79,7 +116,18 @@ clickVideos.forEach((video) => {
   const playButton = videoCard?.querySelector("[data-video-play], .phone-play");
   let manuallyPaused = false;
 
-  playButton?.addEventListener("click", () => playClickVideo(video));
+  const prepareSelectedVideo = () => prepareClickVideo(video);
+
+  playButton?.addEventListener("pointerdown", prepareSelectedVideo, {
+    passive: true,
+  });
+  playButton?.addEventListener("touchstart", prepareSelectedVideo, {
+    passive: true,
+  });
+  playButton?.addEventListener("click", (event) => {
+    event.preventDefault();
+    playClickVideo(video);
+  });
 
   video.addEventListener("click", () => {
     if (video.paused) {
@@ -91,8 +139,22 @@ clickVideos.forEach((video) => {
     video.pause();
   });
 
-  video.addEventListener("play", () => videoCard?.classList.add("is-playing"));
+  video.addEventListener("loadstart", () => {
+    if (!video.paused) setVideoLoading(video, true);
+  });
+  video.addEventListener("waiting", () => {
+    if (!video.paused) {
+      videoCard?.classList.remove("is-playing");
+      setVideoLoading(video, true);
+    }
+  });
+  video.addEventListener("playing", () => {
+    setVideoLoading(video, false);
+    videoCard?.classList.remove("play-error");
+    videoCard?.classList.add("is-playing");
+  });
   video.addEventListener("pause", () => {
+    setVideoLoading(video, false);
     videoCard?.classList.remove("is-playing");
 
     const stoppedNearEnd =
@@ -106,6 +168,11 @@ clickVideos.forEach((video) => {
     }
 
     manuallyPaused = false;
+  });
+  video.addEventListener("error", () => {
+    setVideoLoading(video, false);
+    videoCard?.classList.remove("is-playing");
+    videoCard?.classList.add("play-error");
   });
   video.addEventListener("ended", () => {
     if (video.matches("[data-pink-video]")) {
