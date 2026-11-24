@@ -53,10 +53,14 @@ const getVideoCard = (video) =>
   video.closest("[data-video-card]") || video.closest(".phone");
 
 const prepareClickVideo = (video) => {
-  video.preload = "auto";
+  video.setAttribute("preload", "auto");
   video.playsInline = true;
 
-  if (video.networkState === HTMLMediaElement.NETWORK_EMPTY) {
+  if (
+    video.dataset.preloadStarted !== "true" &&
+    video.readyState < HTMLMediaElement.HAVE_FUTURE_DATA
+  ) {
+    video.dataset.preloadStarted = "true";
     video.load();
   }
 };
@@ -170,6 +174,7 @@ clickVideos.forEach((video) => {
     manuallyPaused = false;
   });
   video.addEventListener("error", () => {
+    delete video.dataset.preloadStarted;
     setVideoLoading(video, false);
     videoCard?.classList.remove("is-playing");
     videoCard?.classList.add("play-error");
@@ -182,11 +187,74 @@ clickVideos.forEach((video) => {
   });
 });
 
+const primeSlideVideos = (slide) => {
+  if (!slide || slide.dataset.videosPrimed === "true") return;
+
+  const videos = [...slide.querySelectorAll("[data-click-video]")];
+  if (!videos.length) return;
+
+  slide.dataset.videosPrimed = "true";
+  videos.forEach(prepareClickVideo);
+};
+
+const primeHashSlide = () => {
+  if (!window.location.hash) return;
+  const target = document.querySelector(window.location.hash);
+  if (target?.matches("section")) primeSlideVideos(target);
+};
+
+let primeFrame = 0;
+const primeNearestSlide = () => {
+  primeFrame = 0;
+  const slides = [...document.querySelectorAll(".portfolio section")];
+  const nearestSlide = slides
+    .filter((slide) => slide.getBoundingClientRect().bottom > 0)
+    .sort(
+      (first, second) =>
+        Math.abs(first.getBoundingClientRect().top) -
+        Math.abs(second.getBoundingClientRect().top),
+    )[0];
+
+  primeSlideVideos(nearestSlide);
+};
+
+const scheduleNearestSlidePrime = () => {
+  if (primeFrame) return;
+  primeFrame = window.requestAnimationFrame(primeNearestSlide);
+};
+
+primeHashSlide();
+window.requestAnimationFrame(() =>
+  window.requestAnimationFrame(scheduleNearestSlidePrime),
+);
+window.addEventListener("scroll", scheduleNearestSlidePrime, { passive: true });
+window.addEventListener("hashchange", () => {
+  primeHashSlide();
+  scheduleNearestSlidePrime();
+});
+
+const isVideoNearViewport = (video) => {
+  if (Math.abs((window.visualViewport?.scale || 1) - 1) > 0.02) return true;
+
+  const rect = video.getBoundingClientRect();
+  const margin = 120;
+  return (
+    rect.bottom >= -margin &&
+    rect.top <= window.innerHeight + margin &&
+    rect.right >= -margin &&
+    rect.left <= window.innerWidth + margin
+  );
+};
+
 if ("IntersectionObserver" in window) {
   const clickVideoObserver = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
-        if (!entry.isIntersecting && !entry.target.paused) {
+        if (
+          !entry.isIntersecting &&
+          !isVideoNearViewport(entry.target) &&
+          !entry.target.paused
+        ) {
           entry.target.pause();
         }
       });
