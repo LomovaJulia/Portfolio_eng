@@ -3,9 +3,25 @@ const showreel = document.querySelector("#showreel-video");
 if (showreel) {
   showreel.muted = true;
   showreel.loop = true;
+  let showreelInView = true;
+
+  const nativeZoomActive = () => {
+    const scale = window.visualViewport?.scale || 1;
+    return Math.abs(scale - 1) > 0.02;
+  };
 
   const keepShowreelPlaying = () => {
-    if (document.visibilityState === "visible" && showreel.paused) {
+    const shouldPlay =
+      document.visibilityState === "visible" &&
+      showreelInView &&
+      !nativeZoomActive();
+
+    if (!shouldPlay && !showreel.paused) {
+      showreel.pause();
+      return;
+    }
+
+    if (shouldPlay && showreel.paused) {
       showreel.play().catch(() => {});
     }
   };
@@ -14,6 +30,21 @@ if (showreel) {
   document.addEventListener("visibilitychange", keepShowreelPlaying);
   showreel.addEventListener("canplay", keepShowreelPlaying);
   showreel.addEventListener("pause", keepShowreelPlaying);
+
+  if ("IntersectionObserver" in window) {
+    const showreelObserver = new IntersectionObserver(
+      ([entry]) => {
+        showreelInView = Boolean(entry?.isIntersecting);
+        keepShowreelPlaying();
+      },
+      { threshold: 0.01 },
+    );
+    showreelObserver.observe(showreel);
+  }
+
+  window.visualViewport?.addEventListener("resize", keepShowreelPlaying, {
+    passive: true,
+  });
 }
 
 const clickVideos = [...document.querySelectorAll("[data-click-video]")];
@@ -83,3 +114,18 @@ clickVideos.forEach((video) => {
     }
   });
 });
+
+if ("IntersectionObserver" in window) {
+  const clickVideoObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting && !entry.target.paused) {
+          entry.target.pause();
+        }
+      });
+    },
+    { rootMargin: "120px 0px", threshold: 0.01 },
+  );
+
+  clickVideos.forEach((video) => clickVideoObserver.observe(video));
+}

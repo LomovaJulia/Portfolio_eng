@@ -16,6 +16,9 @@
     element.matches("section"),
   );
 
+  const getFrameWidth = () =>
+    document.querySelector(".mobile-slide-frame")?.clientWidth || root.clientWidth;
+
   const updateScale = (layoutWidth = lastLayoutWidth || root.clientWidth) => {
     // Keep the layout width frozen while the user pinches. iOS Safari may
     // report changing client widths during native zoom, which must not alter
@@ -23,7 +26,7 @@
     if (!layoutWidth || layoutWidth === lastLayoutWidth) return;
 
     lastLayoutWidth = layoutWidth;
-    const scale = Math.min(1, Math.max(0.18, (layoutWidth - 20) / SLIDE_WIDTH));
+    const scale = Math.min(1, Math.max(0.18, layoutWidth / SLIDE_WIDTH));
     root.style.setProperty("--mobile-slide-scale", String(scale));
     document.querySelectorAll(".mobile-slide-frame").forEach((frame) => {
       frame.style.height = `${SLIDE_HEIGHT * scale}px`;
@@ -47,7 +50,7 @@
       frame.appendChild(slide);
     });
 
-    updateScale(root.clientWidth);
+    updateScale(getFrameWidth());
 
     if (window.location.hash) {
       requestAnimationFrame(() => {
@@ -87,7 +90,7 @@
     mobileMode = layoutWidth <= MOBILE_BREAKPOINT;
     lastLayoutWidth = 0;
     syncLayout();
-    if (mobileMode) updateScale(layoutWidth);
+    if (mobileMode) updateScale(getFrameWidth());
   };
 
   syncLayout();

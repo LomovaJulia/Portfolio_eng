@@ -37,25 +37,31 @@
     position: relative;
     width: 100%;
     overflow: hidden;
-    overflow: clip;
     scroll-margin-top: 10px;
-    contain: layout paint style;
-    content-visibility: auto;
     touch-action: pan-x pan-y pinch-zoom;
   }
 
   .mobile-slide-frame > section {
     position: absolute;
     top: 0;
-    left: 50%;
+    left: 0;
     width: 1600px !important;
     height: 900px !important;
     min-height: 900px !important;
     max-height: 900px !important;
-    margin: 0 0 0 -800px !important;
+    margin: 0 !important;
     border-radius: 24px !important;
     transform: scale(var(--mobile-slide-scale, 0.25));
-    transform-origin: top center;
+    transform-origin: top left;
+  }
+
+  /* Safari handles native pinch much more reliably when the fixed slide is
+     scaled as layout instead of being kept as one huge compositor layer. */
+  @supports (zoom: 1) {
+    .mobile-slide-frame > section {
+      zoom: var(--mobile-slide-scale, 0.25);
+      transform: none;
+    }
   }
 
   .mobile-slide-mode .hero {
