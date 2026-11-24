@@ -17,6 +17,8 @@
     min-width: 0;
     overflow-x: hidden;
     overscroll-behavior-x: none;
+    -webkit-text-size-adjust: none;
+    text-size-adjust: none;
     touch-action: pan-x pan-y pinch-zoom;
   }
 
@@ -60,6 +62,8 @@
   @supports (zoom: 1) {
     .mobile-slide-frame > section {
       zoom: var(--mobile-slide-scale, 0.25);
+      -webkit-text-size-adjust: none;
+      text-size-adjust: none;
       transform: none;
     }
   }
