@@ -5,7 +5,10 @@
   const root = document.documentElement;
   const portfolio = document.querySelector(".portfolio");
   const mobileQuery = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`);
+  const isTouchDevice =
+    navigator.maxTouchPoints > 0 || window.matchMedia("(pointer: coarse)").matches;
   let lastLayoutWidth = 0;
+  let mobileMode = mobileQuery.matches;
 
   if (!portfolio) return;
 
@@ -13,11 +16,10 @@
     element.matches("section"),
   );
 
-  const updateScale = () => {
-    // Pinch-to-zoom changes the visual viewport and fires many window resize
-    // events. The layout viewport stays stable, so use its width and skip
-    // duplicate work instead of fighting the browser's native zoom gesture.
-    const layoutWidth = root.clientWidth;
+  const updateScale = (layoutWidth = lastLayoutWidth || root.clientWidth) => {
+    // Keep the layout width frozen while the user pinches. iOS Safari may
+    // report changing client widths during native zoom, which must not alter
+    // the slide's own scale or frame height.
     if (!layoutWidth || layoutWidth === lastLayoutWidth) return;
 
     lastLayoutWidth = layoutWidth;
@@ -30,7 +32,7 @@
 
   const enterMobileSlides = () => {
     if (root.classList.contains("mobile-slide-mode")) {
-      updateScale();
+      updateScale(lastLayoutWidth);
       return;
     }
 
@@ -45,7 +47,7 @@
       frame.appendChild(slide);
     });
 
-    updateScale();
+    updateScale(root.clientWidth);
 
     if (window.location.hash) {
       requestAnimationFrame(() => {
@@ -70,30 +72,41 @@
   };
 
   const syncLayout = () => {
-    if (mobileQuery.matches) {
+    if (mobileMode) {
       enterMobileSlides();
     } else {
       leaveMobileSlides();
     }
   };
 
-  syncLayout();
-  if (mobileQuery.addEventListener) {
-    mobileQuery.addEventListener("change", syncLayout);
-  } else {
-    mobileQuery.addListener?.(syncLayout);
-  }
+  const refreshAfterRealLayoutChange = () => {
+    const visualScale = window.visualViewport?.scale || 1;
+    if (Math.abs(visualScale - 1) > 0.02) return;
 
-  if ("ResizeObserver" in window) {
-    const layoutObserver = new ResizeObserver(() => {
-      if (mobileQuery.matches) updateScale();
+    const layoutWidth = root.clientWidth;
+    mobileMode = layoutWidth <= MOBILE_BREAKPOINT;
+    lastLayoutWidth = 0;
+    syncLayout();
+    if (mobileMode) updateScale(layoutWidth);
+  };
+
+  syncLayout();
+
+  window.addEventListener(
+    "orientationchange",
+    () => {
+      window.requestAnimationFrame(() =>
+        window.requestAnimationFrame(refreshAfterRealLayoutChange),
+      );
+    },
+    { passive: true },
+  );
+
+  // Desktop window resizing still needs to switch layouts. Touch devices use
+  // orientationchange only, so pinch-to-zoom can never trigger a re-layout.
+  if (!isTouchDevice) {
+    window.addEventListener("resize", refreshAfterRealLayoutChange, {
+      passive: true,
     });
-    layoutObserver.observe(root);
-  } else {
-    window.addEventListener(
-      "orientationchange",
-      () => window.requestAnimationFrame(updateScale),
-      { passive: true },
-    );
   }
 })();
