@@ -16,6 +16,7 @@
   html.mobile-slide-mode body {
     min-width: 0;
     overflow-x: hidden;
+    touch-action: pan-x pan-y pinch-zoom;
   }
 
   html.mobile-slide-mode body {
@@ -28,6 +29,7 @@
     gap: 10px;
     min-height: 100vh;
     padding: 10px;
+    touch-action: pan-x pan-y pinch-zoom;
   }
 
   .mobile-slide-frame {
@@ -35,6 +37,7 @@
     width: 100%;
     overflow: visible;
     scroll-margin-top: 10px;
+    touch-action: pan-x pan-y pinch-zoom;
   }
 
   .mobile-slide-frame > section {
@@ -1230,6 +1233,14 @@ h1 {
   color: var(--slate-blue);
   font-size: 1.28rem;
   line-height: 1;
+}
+
+.tool-grid .tool-logo {
+  display: block;
+  width: 25px;
+  height: 25px;
+  object-fit: contain;
+  border-radius: 6px;
 }
 
 .tool-grid strong {
